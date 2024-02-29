@@ -1,17 +1,21 @@
 import { Picker } from "@react-native-picker/picker";
+import * as ImagePicker from "expo-image-picker";
 import { collection, getDocs, getFirestore } from "firebase/firestore";
 import { Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import {
+  Image,
   StyleSheet,
   Text,
   TextInput,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from "react-native";
 import { app } from "../../firebaseConfig";
 
 const AddPostScreen = () => {
+  const [image, setImage] = useState(null);
   const db = getFirestore(app);
   const [categoryList, setCategoryList] = useState([]);
 
@@ -29,6 +33,28 @@ const AddPostScreen = () => {
     });
   };
 
+  // Image picker method to pick image from gallery
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 4],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
+
+  const onSubmitMethod = (value) => {
+    value.image = image;
+    console.log(value);
+  };
+
   return (
     <View className="p-10">
       <Text className="text-[27px] font-bold">Add New Post</Text>
@@ -44,7 +70,16 @@ const AddPostScreen = () => {
           price: "",
           image: "",
         }}
-        onSubmit={(value) => console.log(value)}
+        onSubmit={(value) => onSubmitMethod(value)}
+        validate={(values) => {
+          const errors = {};
+          if (!values.title) {
+            console.log("Title not present");
+            ToastAndroid.show("Title must be there", ToastAndroid.SHORT);
+            errors.name = "Title must be there";
+          }
+          return errors;
+        }}
       >
         {({
           handleChange,
@@ -52,8 +87,22 @@ const AddPostScreen = () => {
           handleSubmit,
           values,
           setFieldValue,
+          errors,
         }) => (
           <View>
+            <TouchableOpacity onPress={pickImage}>
+              {image ? (
+                <Image
+                  source={{ uri: image }}
+                  style={{ width: 100, height: 100, borderRadius: 15 }}
+                ></Image>
+              ) : (
+                <Image
+                  style={{ width: 100, height: 100, borderRadius: 15 }}
+                  source={require("./../../assets/images/placeholder.jpg")}
+                ></Image>
+              )}
+            </TouchableOpacity>
             <TextInput
               style={styles.input}
               placeholder="Title"
