@@ -1,9 +1,13 @@
+import { useUser } from "@clerk/clerk-expo";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
-import { collection, getDocs, getFirestore } from "firebase/firestore";
+import { addDoc, collection, getDocs, getFirestore } from "firebase/firestore";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
+  Alert,
   Image,
   StyleSheet,
   Text,
@@ -17,6 +21,9 @@ import { app } from "../../firebaseConfig";
 const AddPostScreen = () => {
   const [image, setImage] = useState(null);
   const db = getFirestore(app);
+  const storage = getStorage();
+  const [loading, setLoading] = useState(false);
+  const { user } = useUser();
   const [categoryList, setCategoryList] = useState([]);
 
   useEffect(() => {
@@ -50,9 +57,32 @@ const AddPostScreen = () => {
     }
   };
 
-  const onSubmitMethod = (value) => {
-    value.image = image;
-    console.log(value);
+  const onSubmitMethod = async (value) => {
+    setLoading(true);
+    //Convert URI to Blob File
+    const resp = await fetch(image);
+    const blob = await resp.blob();
+    const storageRef = ref(storage, "communityPost/" + Date.now() + ".jpg");
+
+    uploadBytes(storageRef, blob)
+      .then((snapshot) => {
+        console.log("Uploaded a blob or file!");
+      })
+      .then((resp) => {
+        getDownloadURL(storageRef).then(async (downloadUrl) => {
+          console.log(downloadUrl);
+          value.image = downloadUrl;
+          value.userName = user.fullName;
+          value.userEmail = user.primaryEmailAddress.emailAddress;
+          value.userImage = user.imageUrl;
+          const docRef = await addDoc(collection(db, "UserPost"), value);
+          if (docRef.id) {
+            setLoading(false);
+            console.log("Document Added!!");
+            Alert.alert("Success!!!", "Post Added Successfully.");
+          }
+        });
+      });
   };
 
   return (
@@ -69,6 +99,9 @@ const AddPostScreen = () => {
           address: "",
           price: "",
           image: "",
+          userName: "",
+          userEmail: "",
+          userImage: "",
         }}
         onSubmit={(value) => onSubmitMethod(value)}
         validate={(values) => {
@@ -153,8 +186,18 @@ const AddPostScreen = () => {
             <TouchableOpacity
               onPress={handleSubmit}
               className="p-4 bg-blue-500 rounded-full mt-10"
+              style={{
+                backgroundColor: loading ? "#ccc" : "#007BFF",
+              }}
+              disabled={loading}
             >
-              <Text className="text-white text-center text-[16px]">Submit</Text>
+              {loading ? (
+                <ActivityIndicator color="#fff"></ActivityIndicator>
+              ) : (
+                <Text className="text-white text-center text-[16px]">
+                  Submit
+                </Text>
+              )}
             </TouchableOpacity>
             {/* 
             <Button
