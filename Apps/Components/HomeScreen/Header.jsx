@@ -20,7 +20,7 @@ const Header = () => {
       </View>
 
       {/* Search bar */}
-      <View className="p-3 px-5 bg-white mt-5 rounded-full flex flex-row items-center border-[1px] border-blue-500">
+      <View className="p-[9px] px-5 bg-blue-50 mt-5 rounded-full flex flex-row items-center border-[1px] border-blue-300">
         <Ionicons name="search" size={24} color="black" />
         <TextInput
           placeholder="Search"
