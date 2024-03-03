@@ -60,7 +60,10 @@ const HomeScreen = () => {
       {/* Category List */}
       <Categories categoryList={categoryList}></Categories>
       {/* Latest Item List */}
-      <LatestItemList latestItemList={latestItemList}></LatestItemList>
+      <LatestItemList
+        latestItemList={latestItemList}
+        heading={"Latest Items"}
+      ></LatestItemList>
     </ScrollView>
   );
 };
