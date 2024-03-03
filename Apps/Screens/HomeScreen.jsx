@@ -1,18 +1,21 @@
-import { collection, getDocs, getFirestore } from "firebase/firestore";
+import { collection, getDocs, getFirestore, orderBy } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { View } from "react-native";
+import { ScrollView } from "react-native";
 import { app } from "../../firebaseConfig";
 import Categories from "../Components/HomeScreen/Categories";
 import Header from "../Components/HomeScreen/Header";
+import LatestItemList from "../Components/HomeScreen/LatestItemList";
 import Slider from "../Components/HomeScreen/Slider";
 
 const HomeScreen = () => {
   const db = getFirestore(app);
   const [sliderList, setSliderList] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
+  const [latestItemList, setLatestItemList] = useState([]);
   useEffect(() => {
     getSliders();
     getCategoryList();
+    getLatestItemList();
   }, []);
 
   // used to get sliders for home screen
@@ -31,19 +34,34 @@ const HomeScreen = () => {
     setCategoryList([]);
     const querySnapshot = await getDocs(collection(db, "Category"));
     querySnapshot.forEach((doc) => {
-      console.log("Docs:", doc.data());
+      // console.log("Docs:", doc.data());
       setCategoryList((categoryList) => [...categoryList, doc.data()]);
     });
   };
 
+  //get latest item list
+  const getLatestItemList = async () => {
+    setLatestItemList([]);
+    const querySnapshot = await getDocs(
+      collection(db, "UserPost"),
+      orderBy("createdAt", "desc")
+    );
+    querySnapshot.forEach((doc) => {
+      console.log("Docs", doc.data());
+      setLatestItemList((latestItemList) => [...latestItemList, doc.data()]);
+    });
+  };
+
   return (
-    <View className="py-8 px-6 bg-white flex-1">
+    <ScrollView className="py-8 px-6 bg-white flex-1">
       <Header></Header>
       {/* Slider */}
       <Slider sliderList={sliderList}></Slider>
       {/* Category List */}
       <Categories categoryList={categoryList}></Categories>
-    </View>
+      {/* Latest Item List */}
+      <LatestItemList latestItemList={latestItemList}></LatestItemList>
+    </ScrollView>
   );
 };
 
