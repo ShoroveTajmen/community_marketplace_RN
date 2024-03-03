@@ -4,7 +4,7 @@ import PostItem from "./PostItem";
 
 const LatestItemList = ({ latestItemList }) => {
   return (
-    <View className="mt-3">
+    <View className="mt-3 mb-[30px]">
       <Text className="font-bold text-[20px]">Latest Items</Text>
       <FlatList
         data={latestItemList}

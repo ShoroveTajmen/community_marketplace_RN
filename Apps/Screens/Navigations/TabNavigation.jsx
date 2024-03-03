@@ -4,8 +4,8 @@ import React from "react";
 import { Text } from "react-native";
 import AddPostScreen from "../AddPostScreen";
 import ExploreScreen from "../ExploreScreen";
-import HomeScreen from "../HomeScreen";
 import ProfileScreen from "../ProfileScreen";
+import HomeScreenStackNav from "./HomeScreenStackNav";
 
 const Tab = createBottomTabNavigator();
 
@@ -13,8 +13,8 @@ const TabNavigation = () => {
   return (
     <Tab.Navigator screenOptions={{ headerShown: false }}>
       <Tab.Screen
-        name="home"
-        component={HomeScreen}
+        name="home-nav"
+        component={HomeScreenStackNav}
         options={{
           tabBarLabel: ({ color }) => (
             <Text style={{ color: color, fontSize: 12, marginBottom: 3 }}>
