@@ -2,6 +2,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
 import HomeScreen from "../HomeScreen";
 import ItemList from "../ItemList";
+import ProductDetail from "../ProductDetail";
 
 const Stack = createStackNavigator();
 
@@ -25,6 +26,17 @@ const HomeScreenStackNav = () => {
           },
           headerTintColor: "#fff",
         })}
+      />
+      <Stack.Screen
+        name="product-detail"
+        component={ProductDetail}
+        options={{
+          headerStyle: {
+            backgroundColor: "#3b82f6",
+          },
+          headerTintColor: "#fff",
+          headerTitle: "Detail",
+        }}
       />
     </Stack.Navigator>
   );
