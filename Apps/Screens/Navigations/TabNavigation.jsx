@@ -3,9 +3,9 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import React from "react";
 import { Text } from "react-native";
 import AddPostScreen from "../AddPostScreen";
-import ProfileScreen from "../ProfileScreen";
 import ExploreScreenStackNav from "./ExploreScreenStackNav";
 import HomeScreenStackNav from "./HomeScreenStackNav";
+import ProfileStackNav from "./ProfileStackNav";
 
 const Tab = createBottomTabNavigator();
 
@@ -56,7 +56,7 @@ const TabNavigation = () => {
       ></Tab.Screen>
       <Tab.Screen
         name="profile"
-        component={ProfileScreen}
+        component={ProfileStackNav}
         options={{
           tabBarLabel: ({ color }) => (
             <Text style={{ color: color, fontSize: 12, marginBottom: 3 }}>
